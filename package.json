@@ -1,0 +1,25 @@
+{
+  "name": "nju_gpa_calculator_chrome",
+  "version": "1.0.0",
+  "description": "A simple chrome extension to calculate GPA",
+  "main": "index.js",
+  "scripts": {
+    "build": "./node_modules/.bin/webpack",
+    "watch": "./node_modules/.bin/webpack -w"
+  },
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/viccrubs/ChromeNJUGPACalculator"
+  },
+  "dependencies": {
+    "moment": "~2.18.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "~0.0.48",
+    "awesome-typescript-loader": "^3.2.3",
+    "typescript": "~2.5.2",
+    "webpack": "~3.5.5"
+  }
+}
