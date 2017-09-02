@@ -1,11 +1,11 @@
 webpackJsonp([0],[
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__configs__ = __webpack_require__(1);
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const Constants_1 = __webpack_require__(1);
 const queryInfo = {
     active: true,
     currentWindow: true
@@ -13,8 +13,8 @@ const queryInfo = {
 window.onload = () => {
     chrome.tabs.query(queryInfo, tabs => {
         const tab = tabs[0];
-        if (!tab.url.startsWith(Constants_1.jwUrl)) {
-            document.getElementById("content").textContent = "请打开教务网的“成绩查询”页面！";
+        if (!tab.url.startsWith(__WEBPACK_IMPORTED_MODULE_0__configs__["b" /* jwUrl */])) {
+            document.write("请打开教务网的“成绩查询”页面！");
             return;
         }
         chrome.tabs.sendMessage(tab.id, { type: 0 /* COLLECT_GRADES */ }, responseCallback);
@@ -22,8 +22,10 @@ window.onload = () => {
 };
 function responseCallback(res) {
     const courses = res;
-    const spanIncludeXuanxiu = document.getElementById("include_xuanxiu");
-    spanIncludeXuanxiu.textContent = calculateGPA(courses).toFixed(2);
+    const spanIncludeElective = document.getElementById("include_elective");
+    const spanExcludeElective = document.getElementById("exclude_elective");
+    spanIncludeElective.textContent = calculateGPA(courses).toFixed(2);
+    spanExcludeElective.textContent = calculateGPA(courses.filter(x => !Object(__WEBPACK_IMPORTED_MODULE_0__configs__["a" /* judgeIfItsElective */])(x))).toFixed(2);
 }
 function calculateGPA(courses) {
     const validCourses = courses.filter(x => x.credit);
@@ -35,12 +37,27 @@ function calculateGPA(courses) {
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+const jwUrl = "http://elite.nju.edu.cn/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList";
+/* harmony export (immutable) */ __webpack_exports__["b"] = jwUrl;
 
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.jwUrl = "http://elite.nju.edu.cn/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList";
+const judgeIfItsElective = course => {
+    const possibleNumberStarts = [
+        "77",
+        "78",
+        "61",
+        "002",
+        "003",
+        "004",
+        "37",
+        "500"
+    ];
+    return possibleNumberStarts.map(x => course.id.startsWith(x)).reduce((x, y) => x || y, false);
+};
+/* harmony export (immutable) */ __webpack_exports__["a"] = judgeIfItsElective;
+
 
 
 /***/ })

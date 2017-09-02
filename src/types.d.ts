@@ -1,5 +1,16 @@
-export interface Course {
-    number: string,
+declare const enum ActionType {
+    COLLECT_GRADES,
+    TEST
+}
+
+declare interface Action { 
+    type: ActionType
+}
+
+
+
+declare interface Course {
+    id: string,
     chineseName: string,
     englishName: string,
     type: string,

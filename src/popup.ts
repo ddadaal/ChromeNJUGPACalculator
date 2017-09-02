@@ -1,6 +1,4 @@
-import * as moment from 'moment';
-import { jwUrl, ActionType } from './Constants';
-import { Course } from './Course';
+import { jwUrl, judgeIfItsElective } from './configs';
 
 const queryInfo = {
   active: true,
@@ -12,7 +10,7 @@ window.onload = ()=>{
   chrome.tabs.query(queryInfo, tabs=>{
     const tab = tabs[0];
     if (!tab.url.startsWith(jwUrl)){
-      document.getElementById("content").textContent = "请打开教务网的“成绩查询”页面！";
+      document.write("请打开教务网的“成绩查询”页面！");
       return;
     }
     chrome.tabs.sendMessage(tab.id,{type: ActionType.COLLECT_GRADES},responseCallback);
@@ -22,8 +20,10 @@ window.onload = ()=>{
 function responseCallback(res) {
   const courses = res as Course[];
   
-  const spanIncludeXuanxiu = document.getElementById("include_xuanxiu");
-  spanIncludeXuanxiu.textContent = calculateGPA(courses).toFixed(2);
+  const spanIncludeElective = document.getElementById("include_elective");
+  const spanExcludeElective = document.getElementById("exclude_elective");
+  spanIncludeElective.textContent = calculateGPA(courses).toFixed(3);
+  spanExcludeElective.textContent = calculateGPA(courses.filter(x=>!judgeIfItsElective(x))).toFixed(3);  
 
 }
 
