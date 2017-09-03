@@ -1,20 +1,40 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Chrome Extension GPA Calculator</title>
-    <script src="js/vendor.js"></script>
-  </head>
-  <body>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Chrome Extension GPA Calculator</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <script src="js/vendor.js"></script>
+</head>
+
+<body>
+  <div>
+    <h3>当前学期：<strong id="currentTerm"></strong></h3>
     <ul>
       <li>
-        包括选修课：<span id="include_elective"></span>
+        <p>已选择 <strong id="numSelected"></strong> 门课</p>
       </li>
       <li>
-        不包括选修课：<span id="exclude_elective"></span>
+        已选：<strong id="currentTermSelectedGPA"></strong>
+      </li>
+      <li>
+        全部：<strong id="currentTermAllGPA"></strong>
       </li>
     </ul>
-    <script src="js/popup.js"></script>
-  </body>
-</html>
+  </div>
+  <div>
+    <h3>多个学期</h3>
+    <h4>已选择以下学期：</h4>
+    <input type="button" id="deselectAll" value="取消选择所有学期（点击后将刷新网页）"/>
+    <ul id="selectedTerms">
+    </ul>
+    <p>总学分：<strong id="multitermsTotalCredits"></strong></p>
+    <p>GPA： <strong id="multitermsGPA"></strong></p>
+  <div>
 
+  </div>
+  <script src="js/popup.js"></script>
+</body>
+
+</html>

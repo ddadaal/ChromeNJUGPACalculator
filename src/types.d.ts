@@ -1,12 +1,3 @@
-declare const enum ActionType {
-    COLLECT_GRADES,
-    TEST
-}
-
-declare interface Action { 
-    type: ActionType
-}
-
 
 
 declare interface Course {
@@ -19,4 +10,10 @@ declare interface Course {
     credit: number, // 学分
     comment: string,
     exchangeScore: string
+}
+
+declare interface TermInfo{
+    termName: string,
+    courses: Course[],
+    selectedCourses: Course[]
 }

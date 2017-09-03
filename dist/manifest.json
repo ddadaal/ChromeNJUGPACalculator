@@ -13,11 +13,12 @@
   "content_scripts": [
       {
           "matches": ["*://elite.nju.edu.cn/jiaowu/student/studentinfo/achievementinfo.do?method=searchTermList*"],
-          "js": ["js/vendor.js", "js/content_script.js"]
+          "js": ["js/vendor.js", "js/contentScript.js"]
       }
   ],
 
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "storage"
   ]
 }
