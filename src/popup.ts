@@ -1,4 +1,4 @@
-import { jwUrl, judgeIfItsElective } from './configs';
+import { jwUrl, judgeIfItsElective, calculateGPA } from './configs';
 
 const queryInfo = {
   active: true,
@@ -22,17 +22,8 @@ function responseCallback(res) {
   
   const spanIncludeElective = document.getElementById("include_elective");
   const spanExcludeElective = document.getElementById("exclude_elective");
-  spanIncludeElective.textContent = calculateGPA(courses).toFixed(3);
-  spanExcludeElective.textContent = calculateGPA(courses.filter(x=>!judgeIfItsElective(x))).toFixed(3);  
+  spanIncludeElective.textContent = calculateGPA(courses).toFixed(4);
+  spanExcludeElective.textContent = calculateGPA(courses.filter(x=>!judgeIfItsElective(x))).toFixed(4);  
 
-}
-
-function calculateGPA(courses: Course[]){
-  const validCourses = courses.filter(x=>x.credit);
-
-  const totalCredits = courses.map(x=>x.credit).reduce((x,y)=>x+y,0);
-  const totalCreditScores = courses.map(x=>x.credit * x.score).reduce((x,y)=>x+y,0);
-
-  return totalCreditScores/totalCredits/20;
 }
 

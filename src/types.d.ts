@@ -10,6 +10,7 @@ declare interface Action {
 
 
 declare interface Course {
+    index: number,
     id: string,
     chineseName: string,
     englishName: string,
