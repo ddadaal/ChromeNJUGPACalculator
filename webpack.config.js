@@ -6,7 +6,6 @@ module.exports = {
         popup: path.join(__dirname, 'src/popup.ts'),
         //options: path.join(__dirname, 'src/options.ts'),
         content_script: path.join(__dirname, 'src/content_script.ts'),
-        vendor: ['moment']
     },
     output: {
         path: path.join(__dirname, 'dist/js'),
