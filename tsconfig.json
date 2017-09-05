@@ -6,6 +6,8 @@
         "sourceMap": false,
         "rootDir": "src",
         "outDir": "dist/js",
-        "noEmitOnError": true
+        "noEmitOnError": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
     }
 }

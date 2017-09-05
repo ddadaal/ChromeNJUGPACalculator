@@ -1,5 +1,5 @@
 import { getSelectedTermsAsync, setSelectedTermsAsync, selectOrUpdateTermAsync, deselectTermAsync } from '../data';
-import { Component } from './Component';
+import { Component, action } from './Component';
 
 export const btnTextSelectTerm = "选择这个学期";
 
@@ -32,33 +32,32 @@ export class MultitermBar extends Component {
         return this._selected;
     }
 
-
-    public select = () => {
-        selectOrUpdateTermAsync(this.getCurrentTermInfo());
+    @action
+    public async select () {
+        await selectOrUpdateTermAsync(this.getCurrentTermInfo());
         this._selected = true;
-        this.render();
     }
 
-    public deselect = () => {
-        deselectTermAsync(this.getCurrentTermInfo());
+    @action
+    public async deselect () {
+        await deselectTermAsync(this.getCurrentTermInfo());
         this._selected = false;
-        this.render();
     }
 
-    public update = async () => {
-        selectOrUpdateTermAsync(this.getCurrentTermInfo());
+    @action
+    public async update() {
+        await selectOrUpdateTermAsync(this.getCurrentTermInfo());
         alert("已经更新！");
-        this.render();
     }
 
-    private unselectedBar = () => {
+    private unselectedBar() {
         const div = document.createElement("div");
         const btnSelect = createButton(btnTextSelectTerm, this.select);
         div.appendChild(btnSelect);
         return div;
     }
 
-    private selectedBar = () => {
+    private selectedBar() {
         const div = document.createElement("div");
 
         const btnUpdate = createButton(btnTextUpdateTerm, this.update);
@@ -85,6 +84,7 @@ export class MultitermBar extends Component {
         div.appendChild(br);
         div.appendChild(bar);
 
-        this.set(div);
+        this.refresh(div);
     }
 }
+

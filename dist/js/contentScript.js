@@ -218,6 +218,15 @@ injectGPARow(table);
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__data__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Component__ = __webpack_require__(7);
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 
 
 const btnTextSelectTerm = "选择这个学期";
@@ -240,21 +249,6 @@ class MultitermBar extends __WEBPACK_IMPORTED_MODULE_1__Component__["a" /* Compo
     constructor(getCurrentTermInfo, selected = false) {
         super();
         this._selected = false;
-        this.select = () => {
-            Object(__WEBPACK_IMPORTED_MODULE_0__data__["c" /* selectOrUpdateTermAsync */])(this.getCurrentTermInfo());
-            this._selected = true;
-            this.render();
-        };
-        this.deselect = () => {
-            Object(__WEBPACK_IMPORTED_MODULE_0__data__["a" /* deselectTermAsync */])(this.getCurrentTermInfo());
-            this._selected = false;
-            this.render();
-        };
-        this.update = async () => {
-            Object(__WEBPACK_IMPORTED_MODULE_0__data__["c" /* selectOrUpdateTermAsync */])(this.getCurrentTermInfo());
-            alert("已经更新！");
-            this.render();
-        };
         this.unselectedBar = () => {
             const div = document.createElement("div");
             const btnSelect = createButton(btnTextSelectTerm, this.select);
@@ -276,6 +270,18 @@ class MultitermBar extends __WEBPACK_IMPORTED_MODULE_1__Component__["a" /* Compo
     get selected() {
         return this._selected;
     }
+    async select() {
+        await Object(__WEBPACK_IMPORTED_MODULE_0__data__["c" /* selectOrUpdateTermAsync */])(this.getCurrentTermInfo());
+        this._selected = true;
+    }
+    async deselect() {
+        await Object(__WEBPACK_IMPORTED_MODULE_0__data__["a" /* deselectTermAsync */])(this.getCurrentTermInfo());
+        this._selected = false;
+    }
+    async update() {
+        await Object(__WEBPACK_IMPORTED_MODULE_0__data__["c" /* selectOrUpdateTermAsync */])(this.getCurrentTermInfo());
+        alert("已经更新！");
+    }
     render() {
         const bar = this._selected ? this.selectedBar() : this.unselectedBar();
         const div = document.createElement("div");
@@ -290,6 +296,24 @@ class MultitermBar extends __WEBPACK_IMPORTED_MODULE_1__Component__["a" /* Compo
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = MultitermBar;
 
+__decorate([
+    __WEBPACK_IMPORTED_MODULE_1__Component__["b" /* action */],
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], MultitermBar.prototype, "select", null);
+__decorate([
+    __WEBPACK_IMPORTED_MODULE_1__Component__["b" /* action */],
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], MultitermBar.prototype, "deselect", null);
+__decorate([
+    __WEBPACK_IMPORTED_MODULE_1__Component__["b" /* action */],
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], MultitermBar.prototype, "update", null);
 
 
 /***/ }),
@@ -297,6 +321,7 @@ class MultitermBar extends __WEBPACK_IMPORTED_MODULE_1__Component__["a" /* Compo
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (immutable) */ __webpack_exports__["b"] = action;
 class Component {
     constructor() {
         this._element = document.createElement("div");
@@ -312,6 +337,15 @@ class Component {
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Component;
 
+function action(target, propertyKey, descriptor) {
+    const fn = descriptor.value;
+    const newFn = () => {
+        fn.apply(target, arguments);
+        this.render();
+    };
+    descriptor.value = newFn;
+    return descriptor;
+}
 
 
 /***/ })
