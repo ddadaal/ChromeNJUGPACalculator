@@ -34,4 +34,3 @@ export const actionCreators = {
         type: constants.RefreshPage
     })
 };
-

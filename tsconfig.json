@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "module": "es2015",
-        "target": "es6",
+        "target": "esnext",
         "noImplicitAny": false,
         "sourceMap": false,
         "rootDir": "src",

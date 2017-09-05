@@ -1,5 +1,4 @@
-
-
+/// <reference path="../node_modules/chrome-extension-async/chrome-extension-async.d.ts" />
 declare interface Course {
     index: number,
     id: string,
@@ -17,3 +16,4 @@ declare interface TermInfo{
     courses: Course[],
     selectedCourses: Course[]
 }
+

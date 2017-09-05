@@ -6,6 +6,7 @@ module.exports = {
         popup: path.join(__dirname, 'src/popup.ts'),
         //options: path.join(__dirname, 'src/options.ts'),
         contentScript: path.join(__dirname, 'src/contentScript.ts'),
+        chromeExtensionAsync: path.join(__dirname, 'node_modules/chrome-extension-async/chrome-extension-async.js')
     },
     output: {
         path: path.join(__dirname, 'dist/js'),

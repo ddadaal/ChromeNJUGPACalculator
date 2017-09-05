@@ -1,8 +1,14 @@
-import { judgeIfItsElective, calculateGPA, queryForScoretable, queryForTermName, precision, selectedTermsKey, btnTextDeselectTerm, btnTextSelectTerm, btnTextUpdateTerm, calculateCredits } from './configs';
+import { judgeIfItsElective, queryForScoretable, queryForTermName, precision, selectedTermsKey } from './configs';
+
+import { calculateGPA, calculateCredits } from './calc';
 
 import { constants, actionCreators } from './actions';
 
-const table = document.querySelector(queryForScoretable);
+import { getSelectedTermsAsync, setSelectedTermsAsync, selectOrUpdateTermAsync, deselectTermAsync } from './data';
+
+import { MultitermBar } from './components/MultitermBar';
+
+const table = document.querySelector(queryForScoretable) as HTMLTableElement;
 
 const allRecords = ([] as Element[]).concat(
     Array.from(table.getElementsByClassName("TABLE_TR_01")),
@@ -29,7 +35,7 @@ function getCurrentTermInfo() {
 
 
 function parseCourse(tr: Element): Course {
-    const nodes = tr.querySelectorAll("td")
+    const nodes = tr.querySelectorAll("td");
     return {
         index: parseInt(nodes[0].textContent),
         id: nodes[1].textContent.trim(),
@@ -43,7 +49,7 @@ function parseCourse(tr: Element): Course {
     };
 }
 
-function enhanceTable(table: Element) {
+async function enhanceTable(table: HTMLTableElement) {
     const head = table.querySelector("tr.TABLE_TH");
 
     const firstHeading = head.children[0];
@@ -54,34 +60,32 @@ function enhanceTable(table: Element) {
 
     head.insertBefore(selectedHeading, firstHeading);
 
-    accessSelectedTerms(terms => {
+    const terms = await getSelectedTermsAsync();
+    const selectedThisTerm = terms.filter(x => x.termName === termName);
 
-        const selectedThisTerm = terms.filter(x => x.termName === termName);
+    allRecords.forEach(x => {
+        const firstCell = x.querySelector("td");
 
-        allRecords.forEach(x => {
-            const firstCell = x.querySelector("td");
+        const checkbox = document.createElement("input");
+        checkbox.setAttribute("type", "checkbox");
+        checkbox.setAttribute("index", firstCell.textContent.trim());
+        checkbox.checked = selectedThisTerm.length > 0
+            ? selectedThisTerm[0].selectedCourses.some(x => x.index === parseInt(firstCell.textContent.trim()))
+            : !judgeIfItsElective(parseCourse(x));
 
-            const checkbox = document.createElement("input");
-            checkbox.setAttribute("type", "checkbox");
-            checkbox.setAttribute("index", firstCell.textContent.trim());
-            checkbox.checked = selectedThisTerm.length > 0
-                ? selectedThisTerm[0].selectedCourses.some(x => x.index === parseInt(firstCell.textContent.trim()))
-                : !judgeIfItsElective(parseCourse(x));
+        checkboxes.push(checkbox);
 
-            checkboxes.push(checkbox);
+        const td = document.createElement("td");
+        td.setAttribute("align", "center");
+        td.appendChild(checkbox);
 
-            const td = document.createElement("td");
-            td.setAttribute("align", "center");
-            td.appendChild(checkbox);
-
-            x.insertBefore(td, firstCell);
-        });
-    })
+        x.insertBefore(td, firstCell);
+    });
 
 
 }
 
-function injectGPARow(table: Element) {
+async function injectGPARow(table: HTMLTableElement) {
 
     const spanGPA = document.createElement("span");
     spanGPA.innerText = "点左边计算本学期GPA";
@@ -94,92 +98,35 @@ function injectGPARow(table: Element) {
         spanGPA.textContent = `选中 ${selectedCourses.length} 门课，学分为：${calculateCredits(selectedCourses)}, GPA为: ${calculateGPA(selectedCourses).toFixed(precision)}`;
     };
 
+    const selected = (await getSelectedTermsAsync()).some(x=>x.termName == termName);
 
+    const bar = new MultitermBar(getCurrentTermInfo, selected);
 
-    accessSelectedTerms(terms => {
-        // going to rewrite this part
+    const div = document.createElement("div");
 
+    const hr = document.createElement("hr");
+    const br = document.createElement("br");
 
-        const isSelected = terms.some(x => x.termName == termName);
+    div.appendChild(hr);
+    div.appendChild(btnCalculateGPA);
+    div.appendChild(spanGPA);
+    div.appendChild(hr);
+    div.appendChild(bar.element);
 
-        const spanPrompt  = document.createElement("span");
-        spanPrompt.innerHTML = "<strong>多个学期相关</strong>。选好了请点击地址栏右边的GPA图标，在弹出窗口里会有已经选择的学期信息以及GPA。";
-
-        const btnSelect = document.createElement("input");
-        btnSelect.setAttribute("type", "button");
-        btnSelect.value = isSelected ? btnTextUpdateTerm : btnTextSelectTerm;
-        btnSelect.onclick = () => {
-            selectOrUpdateTerm();
-            const isUpdate = btnSelect.value == btnTextUpdateTerm;
-            btnSelect.value = btnTextUpdateTerm;
-            btnDeselect.disabled = false;
-            if (isUpdate) {
-                 alert("已经更新！");
-            }
-        }
-
-        const btnDeselect = document.createElement("input");
-        btnDeselect.setAttribute("type", "button");
-        btnDeselect.value = btnTextDeselectTerm;
-        btnDeselect.disabled = !isSelected;
-        btnDeselect.onclick = () => {
-            deselectTerm();
-            btnDeselect.disabled = true;
-            btnSelect.value = btnTextSelectTerm;
-        }
-
-        const div = document.createElement("div");
-        const hr = document.createElement("hr");
-        const br = document.createElement("br");
-        div.appendChild(hr);
-        div.appendChild(btnCalculateGPA);
-        div.appendChild(spanGPA);
-        div.appendChild(hr);
-        div.appendChild(spanPrompt);
-        div.appendChild(br);
-        div.appendChild(btnSelect);
-        div.appendChild(btnDeselect);
-
-        table.insertAdjacentElement('afterend', div);
-    })
-
-
+    table.insertAdjacentElement('afterend', div);
 }
 
-function selectOrUpdateTerm() {
-    chrome.storage.local.get(items => {
-        const selectedTerms = items[selectedTermsKey] as TermInfo[];
-        chrome.storage.local.set({ [selectedTermsKey]: selectedTerms.filter(x => x.termName !== termName).concat([getCurrentTermInfo()]) });
-    });
-}
 
-function deselectTerm() {
-    chrome.storage.local.get(items => {
-        const selectedTerms = items[selectedTermsKey] as TermInfo[];
-        chrome.storage.local.set({ [selectedTermsKey]: selectedTerms.filter(x => x.termName !== termName) });
-    });
-}
 
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     if (msg.type === constants.RequireCurrentTermInfo) {
         sendResponse(actionCreators.resultCurrentTermInfo(getCurrentTermInfo()));
-    }else if (msg.type === constants.RefreshPage){
+    } else if (msg.type === constants.RefreshPage) {
         location.reload();
     }
 });
 
-function accessSelectedTerms(callback: (terms: TermInfo[]) => void) {
-    chrome.storage.local.get(items => {
-        var terms = items[selectedTermsKey] as TermInfo[];
-        if (!terms) {
-            chrome.storage.local.set({ [selectedTermsKey]: [] });
-            callback([]);
-        } else {
-            callback(terms);
-        }
 
-    })
-}
 
 
 enhanceTable(table);

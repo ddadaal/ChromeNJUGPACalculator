@@ -18,8 +18,8 @@
     "moment": "~2.18.1"
   },
   "devDependencies": {
-    "@types/chrome": "~0.0.48",
     "awesome-typescript-loader": "^3.2.3",
+    "chrome-extension-async": "^3.2.4",
     "typescript": "~2.5.2",
     "webpack": "~3.5.5"
   }

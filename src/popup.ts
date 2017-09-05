@@ -1,7 +1,8 @@
-import { JW_URL, judgeIfItsElective, calculateGPA, precision, selectedTermsKey,calculateCredits } from './configs';
-
+import { JW_URL, judgeIfItsElective, precision, selectedTermsKey } from './configs';
+import { calculateGPA, calculateCredits } from './calc';
 import { actionCreators, ResultCurrentTermInfoAction, constants } from './actions';
 
+import { getSelectedTermsAsync, setSelectedTermsAsync } from './data';
 //elements
 const spanCurrentTerm = document.getElementById("currentTerm");
 const spanCurrentTermSelectedGPA = document.getElementById("currentTermSelectedGPA");
@@ -14,35 +15,26 @@ const spanMultitermsTotalCredits = document.getElementById("multitermsTotalCredi
 
 const spanMultitermsGPA = document.getElementById("multitermsGPA");
 
-
-
 function appendTermInfo(termInfo: TermInfo, ul: Element) {
   const li = document.createElement("li");
   li.textContent = `${termInfo.termName}, 选中 ${termInfo.selectedCourses.length} 门课`;
   ul.appendChild(li);
 }
 
-function updateMultitermGPA() {
-  chrome.storage.local.get(items => {
-    const selectedTerms = items[selectedTermsKey] as TermInfo[];
-    if (!selectedTerms){
-      chrome.storage.local.set({[selectedTermsKey]: []});
-      return;
-    }
-    const courses = selectedTerms.map(x => x.selectedCourses).reduce((x, y) => x.concat(y), []);
+async function updateMultitermGPAAsync() {
+  const terms = await getSelectedTermsAsync();
 
-    spanMultitermsTotalCredits.textContent = calculateCredits(courses).toString();
 
-    spanMultitermsGPA.textContent = calculateGPA(courses).toFixed(precision);
-    
-    selectedTerms.forEach(x=>appendTermInfo(x,ulSelectedTerms));
-  })
+  const courses = terms.map(x => x.selectedCourses).reduce((x, y) => x.concat(y), []);
+
+  spanMultitermsTotalCredits.textContent = calculateCredits(courses).toString();
+
+  spanMultitermsGPA.textContent = calculateGPA(courses).toFixed(precision);
+
+  terms.forEach(x => appendTermInfo(x, ulSelectedTerms));
 
 }
 
-function deselectAllTerms(){
-  chrome.storage.local.set({[selectedTermsKey]: []});
-}
 
 const queryInfo = {
   active: true,
@@ -51,34 +43,28 @@ const queryInfo = {
 
 
 
-window.onload = () => {
-  chrome.tabs.query(queryInfo, tabs => {
-    const tab = tabs[0];
-    if (!tab.url.startsWith(JW_URL)) {
-      document.write("请打开教务网的“成绩查询”页面！");
-      return;
-    }
-    document.getElementById("deselectAll").onclick = ()=>{
-      deselectAllTerms();
-      location.reload();
-      chrome.tabs.sendMessage(tab.id, actionCreators.refreshPage());
-    }
+window.onload = async () => {
+  const tab = (await chrome.tabs.query(queryInfo))[0];
+  if (!tab.url.startsWith(JW_URL)) {
+    document.write("请打开教务网的“成绩查询”页面！");
+    return;
+  }
+  document.getElementById("deselectAll").onclick = async () => {
+    await setSelectedTermsAsync([]);
+    chrome.tabs.sendMessage(tab.id, actionCreators.refreshPage());
+    location.reload();
+  }
 
-    chrome.tabs.sendMessage(tab.id, actionCreators.requireCurrentTermInfo(), res => {
-      const termInfo = (res as ResultCurrentTermInfoAction).termInfo;
+  const res = await chrome.tabs.sendMessage(tab.id, actionCreators.requireCurrentTermInfo());
 
-      spanCurrentTerm.textContent = termInfo.termName;
+  const termInfo = (res as ResultCurrentTermInfoAction).termInfo;
 
-      numSelected.textContent = termInfo.selectedCourses.length.toString();
+  spanCurrentTerm.textContent = termInfo.termName;
 
-      spanCurrentTermSelectedGPA.textContent = calculateGPA(termInfo.selectedCourses).toFixed(precision);
-      spanCurrentTermAllGPA.textContent = calculateGPA(termInfo.courses).toFixed(precision);
+  numSelected.textContent = termInfo.selectedCourses.length.toString();
 
+  spanCurrentTermSelectedGPA.textContent = calculateGPA(termInfo.selectedCourses).toFixed(precision);
+  spanCurrentTermAllGPA.textContent = calculateGPA(termInfo.courses).toFixed(precision);
 
-    });
-    
-    updateMultitermGPA();
-    
-
-  })
+  await updateMultitermGPAAsync();
 }
