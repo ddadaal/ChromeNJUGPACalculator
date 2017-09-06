@@ -1,5 +1,5 @@
 import { getSelectedTermsAsync, setSelectedTermsAsync, selectOrUpdateTermAsync, deselectTermAsync } from '../data';
-import { Component, action } from './Component';
+import { Component } from './Component';
 
 export const btnTextSelectTerm = "选择这个学期";
 
@@ -32,22 +32,22 @@ export class MultitermBar extends Component {
         return this._selected;
     }
 
-    @action
-    public async select () {
+    public select = async () => {
         await selectOrUpdateTermAsync(this.getCurrentTermInfo());
         this._selected = true;
+        this.render();
     }
 
-    @action
-    public async deselect () {
+    public deselect = async () => {
         await deselectTermAsync(this.getCurrentTermInfo());
         this._selected = false;
+        this.render();
     }
 
-    @action
-    public async update() {
+    public update = async ()=> {
         await selectOrUpdateTermAsync(this.getCurrentTermInfo());
         alert("已经更新！");
+        this.render();
     }
 
     private unselectedBar() {

@@ -17,13 +17,3 @@ export class Component {
     }
 
 }
-
-export function action(target: any, propertyKey: string, descriptor: PropertyDescriptor): any {
-    const fn = descriptor.value;
-    const newFn = () => {
-        fn.apply(target, arguments);
-        this.render();
-    }
-    descriptor.value = newFn;
-    return descriptor;
-}

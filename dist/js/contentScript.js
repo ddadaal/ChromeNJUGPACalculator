@@ -218,15 +218,6 @@ injectGPARow(table);
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__data__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Component__ = __webpack_require__(7);
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 
 
 const btnTextSelectTerm = "选择这个学期";
@@ -249,19 +240,20 @@ class MultitermBar extends __WEBPACK_IMPORTED_MODULE_1__Component__["a" /* Compo
     constructor(getCurrentTermInfo, selected = false) {
         super();
         this._selected = false;
-        this.unselectedBar = () => {
-            const div = document.createElement("div");
-            const btnSelect = createButton(btnTextSelectTerm, this.select);
-            div.appendChild(btnSelect);
-            return div;
+        this.select = async () => {
+            await Object(__WEBPACK_IMPORTED_MODULE_0__data__["c" /* selectOrUpdateTermAsync */])(this.getCurrentTermInfo());
+            this._selected = true;
+            this.render();
         };
-        this.selectedBar = () => {
-            const div = document.createElement("div");
-            const btnUpdate = createButton(btnTextUpdateTerm, this.update);
-            const btnDeselect = createButton(btnTextDeselectTerm, this.deselect);
-            div.appendChild(btnUpdate);
-            div.appendChild(btnDeselect);
-            return div;
+        this.deselect = async () => {
+            await Object(__WEBPACK_IMPORTED_MODULE_0__data__["a" /* deselectTermAsync */])(this.getCurrentTermInfo());
+            this._selected = false;
+            this.render();
+        };
+        this.update = async () => {
+            await Object(__WEBPACK_IMPORTED_MODULE_0__data__["c" /* selectOrUpdateTermAsync */])(this.getCurrentTermInfo());
+            alert("已经更新！");
+            this.render();
         };
         this.getCurrentTermInfo = getCurrentTermInfo;
         this._selected = selected;
@@ -270,17 +262,19 @@ class MultitermBar extends __WEBPACK_IMPORTED_MODULE_1__Component__["a" /* Compo
     get selected() {
         return this._selected;
     }
-    async select() {
-        await Object(__WEBPACK_IMPORTED_MODULE_0__data__["c" /* selectOrUpdateTermAsync */])(this.getCurrentTermInfo());
-        this._selected = true;
+    unselectedBar() {
+        const div = document.createElement("div");
+        const btnSelect = createButton(btnTextSelectTerm, this.select);
+        div.appendChild(btnSelect);
+        return div;
     }
-    async deselect() {
-        await Object(__WEBPACK_IMPORTED_MODULE_0__data__["a" /* deselectTermAsync */])(this.getCurrentTermInfo());
-        this._selected = false;
-    }
-    async update() {
-        await Object(__WEBPACK_IMPORTED_MODULE_0__data__["c" /* selectOrUpdateTermAsync */])(this.getCurrentTermInfo());
-        alert("已经更新！");
+    selectedBar() {
+        const div = document.createElement("div");
+        const btnUpdate = createButton(btnTextUpdateTerm, this.update);
+        const btnDeselect = createButton(btnTextDeselectTerm, this.deselect);
+        div.appendChild(btnUpdate);
+        div.appendChild(btnDeselect);
+        return div;
     }
     render() {
         const bar = this._selected ? this.selectedBar() : this.unselectedBar();
@@ -291,29 +285,11 @@ class MultitermBar extends __WEBPACK_IMPORTED_MODULE_1__Component__["a" /* Compo
         div.appendChild(spanPrompt);
         div.appendChild(br);
         div.appendChild(bar);
-        this.set(div);
+        this.refresh(div);
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = MultitermBar;
 
-__decorate([
-    __WEBPACK_IMPORTED_MODULE_1__Component__["b" /* action */],
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MultitermBar.prototype, "select", null);
-__decorate([
-    __WEBPACK_IMPORTED_MODULE_1__Component__["b" /* action */],
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MultitermBar.prototype, "deselect", null);
-__decorate([
-    __WEBPACK_IMPORTED_MODULE_1__Component__["b" /* action */],
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MultitermBar.prototype, "update", null);
 
 
 /***/ }),
@@ -321,7 +297,6 @@ __decorate([
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (immutable) */ __webpack_exports__["b"] = action;
 class Component {
     constructor() {
         this._element = document.createElement("div");
@@ -330,22 +305,13 @@ class Component {
     get element() {
         return this._element;
     }
-    set(element) {
+    refresh(element) {
         this._element.removeChild(this._element.firstChild);
         this._element.appendChild(element);
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Component;
 
-function action(target, propertyKey, descriptor) {
-    const fn = descriptor.value;
-    const newFn = () => {
-        fn.apply(target, arguments);
-        this.render();
-    };
-    descriptor.value = newFn;
-    return descriptor;
-}
 
 
 /***/ })
