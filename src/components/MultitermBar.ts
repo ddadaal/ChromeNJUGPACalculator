@@ -1,5 +1,5 @@
 import { getSelectedTermsAsync, setSelectedTermsAsync, selectOrUpdateTermAsync, deselectTermAsync } from '../data';
-import { Component } from './Component';
+import { Component, createButton } from './Component';
 
 export const btnTextSelectTerm = "选择这个学期";
 
@@ -7,13 +7,7 @@ export const btnTextUpdateTerm = "更新这个学期的信息！";
 
 export const btnTextDeselectTerm = "取消选择这个学期！";
 
-function createButton(value: string, onclick: () => any) {
-    const btn = document.createElement("input");
-    btn.setAttribute("type", "button");
-    btn.value = value;
-    btn.onclick = onclick;
-    return btn;
-}
+
 
 export class MultitermBar extends Component {
     private getCurrentTermInfo: () => TermInfo;

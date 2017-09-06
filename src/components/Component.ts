@@ -16,4 +16,16 @@ export class Component {
         this._element.appendChild(element);
     }
 
+    public render() {
+
+    }
+
+}
+
+export function createButton(value: string, onclick: () => any) {
+    const btn = document.createElement("input");
+    btn.setAttribute("type", "button");
+    btn.value = value;
+    btn.onclick = onclick;
+    return btn;
 }

@@ -1,12 +1,12 @@
 import { judgeIfItsElective, queryForScoretable, queryForTermName, precision, selectedTermsKey } from './configs';
 
-import { calculateGPA, calculateCredits } from './calc';
-
 import { constants, actionCreators } from './actions';
 
 import { getSelectedTermsAsync, setSelectedTermsAsync, selectOrUpdateTermAsync, deselectTermAsync } from './data';
 
 import { MultitermBar } from './components/MultitermBar';
+
+import { SingletermBar } from './components/SingletermBar';
 
 const table = document.querySelector(queryForScoretable) as HTMLTableElement;
 
@@ -19,6 +19,7 @@ const courses: Course[] = allRecords.map(x => parseCourse(x));
 const termName = document.querySelector(queryForTermName).textContent.trim();
 
 const checkboxes = [] as HTMLInputElement[];
+
 function getSelectedCourses() {
     const selectedIndice = checkboxes.filter(x => x.checked).map(x => parseInt(x.getAttribute("index")));
 
@@ -86,32 +87,18 @@ async function enhanceTable(table: HTMLTableElement) {
 }
 
 async function injectGPARow(table: HTMLTableElement) {
+    const selected = (await getSelectedTermsAsync()).some(x => x.termName == termName);
 
-    const spanGPA = document.createElement("span");
-    spanGPA.innerText = "点左边计算本学期GPA";
+    const singletermBar = new SingletermBar(getCurrentTermInfo);
 
-    const btnCalculateGPA = document.createElement("input");
-    btnCalculateGPA.setAttribute("type", "button");
-    btnCalculateGPA.value = "计算GPA";
-    btnCalculateGPA.onclick = () => {
-        const selectedCourses = getSelectedCourses();
-        spanGPA.textContent = `选中 ${selectedCourses.length} 门课，学分为：${calculateCredits(selectedCourses)}, GPA为: ${calculateGPA(selectedCourses).toFixed(precision)}`;
-    };
-
-    const selected = (await getSelectedTermsAsync()).some(x=>x.termName == termName);
-
-    const bar = new MultitermBar(getCurrentTermInfo, selected);
+    const multitermBar = new MultitermBar(getCurrentTermInfo, selected);
 
     const div = document.createElement("div");
 
     const hr = document.createElement("hr");
-    const br = document.createElement("br");
-
+    div.appendChild(singletermBar.element)
     div.appendChild(hr);
-    div.appendChild(btnCalculateGPA);
-    div.appendChild(spanGPA);
-    div.appendChild(hr);
-    div.appendChild(bar.element);
+    div.appendChild(multitermBar.element);
 
     table.insertAdjacentElement('afterend', div);
 }

@@ -107,17 +107,49 @@ const actionCreators = {
 
 
 /***/ }),
-/* 4 */,
-/* 5 */
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["b"] = createButton;
+class Component {
+    constructor() {
+        this._element = document.createElement("div");
+        this._element.appendChild(document.createElement("div")); // place a placeholder insider
+    }
+    get element() {
+        return this._element;
+    }
+    refresh(element) {
+        this._element.removeChild(this._element.firstChild);
+        this._element.appendChild(element);
+    }
+    render() {
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Component;
+
+function createButton(value, onclick) {
+    const btn = document.createElement("input");
+    btn.setAttribute("type", "button");
+    btn.value = value;
+    btn.onclick = onclick;
+    return btn;
+}
+
+
+/***/ }),
+/* 5 */,
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__configs__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__calc__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__actions__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__data__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_MultitermBar__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actions__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__data__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_MultitermBar__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_SingletermBar__ = __webpack_require__(8);
 
 
 
@@ -160,7 +192,7 @@ async function enhanceTable(table) {
     selectedHeading.setAttribute("align", "center");
     selectedHeading.innerText = "计算GPA";
     head.insertBefore(selectedHeading, firstHeading);
-    const terms = await Object(__WEBPACK_IMPORTED_MODULE_3__data__["b" /* getSelectedTermsAsync */])();
+    const terms = await Object(__WEBPACK_IMPORTED_MODULE_2__data__["b" /* getSelectedTermsAsync */])();
     const selectedThisTerm = terms.filter(x => x.termName === termName);
     allRecords.forEach(x => {
         const firstCell = x.querySelector("td");
@@ -178,32 +210,21 @@ async function enhanceTable(table) {
     });
 }
 async function injectGPARow(table) {
-    const spanGPA = document.createElement("span");
-    spanGPA.innerText = "点左边计算本学期GPA";
-    const btnCalculateGPA = document.createElement("input");
-    btnCalculateGPA.setAttribute("type", "button");
-    btnCalculateGPA.value = "计算GPA";
-    btnCalculateGPA.onclick = () => {
-        const selectedCourses = getSelectedCourses();
-        spanGPA.textContent = `选中 ${selectedCourses.length} 门课，学分为：${Object(__WEBPACK_IMPORTED_MODULE_1__calc__["a" /* calculateCredits */])(selectedCourses)}, GPA为: ${Object(__WEBPACK_IMPORTED_MODULE_1__calc__["b" /* calculateGPA */])(selectedCourses).toFixed(__WEBPACK_IMPORTED_MODULE_0__configs__["c" /* precision */])}`;
-    };
-    const selected = (await Object(__WEBPACK_IMPORTED_MODULE_3__data__["b" /* getSelectedTermsAsync */])()).some(x => x.termName == termName);
-    const bar = new __WEBPACK_IMPORTED_MODULE_4__components_MultitermBar__["a" /* MultitermBar */](getCurrentTermInfo, selected);
+    const selected = (await Object(__WEBPACK_IMPORTED_MODULE_2__data__["b" /* getSelectedTermsAsync */])()).some(x => x.termName == termName);
+    const singletermBar = new __WEBPACK_IMPORTED_MODULE_4__components_SingletermBar__["a" /* SingletermBar */](getCurrentTermInfo);
+    const multitermBar = new __WEBPACK_IMPORTED_MODULE_3__components_MultitermBar__["a" /* MultitermBar */](getCurrentTermInfo, selected);
     const div = document.createElement("div");
     const hr = document.createElement("hr");
-    const br = document.createElement("br");
+    div.appendChild(singletermBar.element);
     div.appendChild(hr);
-    div.appendChild(btnCalculateGPA);
-    div.appendChild(spanGPA);
-    div.appendChild(hr);
-    div.appendChild(bar.element);
+    div.appendChild(multitermBar.element);
     table.insertAdjacentElement('afterend', div);
 }
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-    if (msg.type === __WEBPACK_IMPORTED_MODULE_2__actions__["b" /* constants */].RequireCurrentTermInfo) {
-        sendResponse(__WEBPACK_IMPORTED_MODULE_2__actions__["a" /* actionCreators */].resultCurrentTermInfo(getCurrentTermInfo()));
+    if (msg.type === __WEBPACK_IMPORTED_MODULE_1__actions__["b" /* constants */].RequireCurrentTermInfo) {
+        sendResponse(__WEBPACK_IMPORTED_MODULE_1__actions__["a" /* actionCreators */].resultCurrentTermInfo(getCurrentTermInfo()));
     }
-    else if (msg.type === __WEBPACK_IMPORTED_MODULE_2__actions__["b" /* constants */].RefreshPage) {
+    else if (msg.type === __WEBPACK_IMPORTED_MODULE_1__actions__["b" /* constants */].RefreshPage) {
         location.reload();
     }
 });
@@ -212,12 +233,12 @@ injectGPARow(table);
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__data__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Component__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Component__ = __webpack_require__(4);
 
 
 const btnTextSelectTerm = "选择这个学期";
@@ -229,13 +250,6 @@ const btnTextUpdateTerm = "更新这个学期的信息！";
 const btnTextDeselectTerm = "取消选择这个学期！";
 /* unused harmony export btnTextDeselectTerm */
 
-function createButton(value, onclick) {
-    const btn = document.createElement("input");
-    btn.setAttribute("type", "button");
-    btn.value = value;
-    btn.onclick = onclick;
-    return btn;
-}
 class MultitermBar extends __WEBPACK_IMPORTED_MODULE_1__Component__["a" /* Component */] {
     constructor(getCurrentTermInfo, selected = false) {
         super();
@@ -264,14 +278,14 @@ class MultitermBar extends __WEBPACK_IMPORTED_MODULE_1__Component__["a" /* Compo
     }
     unselectedBar() {
         const div = document.createElement("div");
-        const btnSelect = createButton(btnTextSelectTerm, this.select);
+        const btnSelect = Object(__WEBPACK_IMPORTED_MODULE_1__Component__["b" /* createButton */])(btnTextSelectTerm, this.select);
         div.appendChild(btnSelect);
         return div;
     }
     selectedBar() {
         const div = document.createElement("div");
-        const btnUpdate = createButton(btnTextUpdateTerm, this.update);
-        const btnDeselect = createButton(btnTextDeselectTerm, this.deselect);
+        const btnUpdate = Object(__WEBPACK_IMPORTED_MODULE_1__Component__["b" /* createButton */])(btnTextUpdateTerm, this.update);
+        const btnDeselect = Object(__WEBPACK_IMPORTED_MODULE_1__Component__["b" /* createButton */])(btnTextDeselectTerm, this.deselect);
         div.appendChild(btnUpdate);
         div.appendChild(btnDeselect);
         return div;
@@ -293,26 +307,41 @@ class MultitermBar extends __WEBPACK_IMPORTED_MODULE_1__Component__["a" /* Compo
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-class Component {
-    constructor() {
-        this._element = document.createElement("div");
-        this._element.appendChild(document.createElement("div")); // place a placeholder insider
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Component__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__calc__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__configs__ = __webpack_require__(0);
+
+
+
+class SingletermBar extends __WEBPACK_IMPORTED_MODULE_0__Component__["a" /* Component */] {
+    constructor(getCurrentTermInfo) {
+        super();
+        this.getCurrentTermInfo = getCurrentTermInfo;
+        this.render();
     }
-    get element() {
-        return this._element;
-    }
-    refresh(element) {
-        this._element.removeChild(this._element.firstChild);
-        this._element.appendChild(element);
+    render() {
+        const spanGPA = document.createElement("span");
+        spanGPA.innerText = "点左边计算本学期GPA";
+        const btnCalculateGPA = document.createElement("input");
+        btnCalculateGPA.setAttribute("type", "button");
+        btnCalculateGPA.value = "计算GPA";
+        btnCalculateGPA.onclick = () => {
+            const selectedCourses = this.getCurrentTermInfo().selectedCourses;
+            spanGPA.textContent = `选中 ${selectedCourses.length} 门课，学分为：${Object(__WEBPACK_IMPORTED_MODULE_1__calc__["a" /* calculateCredits */])(selectedCourses)}, GPA为: ${Object(__WEBPACK_IMPORTED_MODULE_1__calc__["b" /* calculateGPA */])(selectedCourses).toFixed(__WEBPACK_IMPORTED_MODULE_2__configs__["c" /* precision */])}`;
+        };
+        const div = document.createElement("div");
+        div.appendChild(btnCalculateGPA);
+        div.appendChild(spanGPA);
+        this.refresh(div);
     }
 }
-/* harmony export (immutable) */ __webpack_exports__["a"] = Component;
+/* harmony export (immutable) */ __webpack_exports__["a"] = SingletermBar;
 
 
 
 /***/ })
-],[5]);
+],[6]);
