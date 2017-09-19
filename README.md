@@ -6,23 +6,28 @@ A simple Chrome Extension to calculate GPA at a click of mouse.
 
 Please check out [official tutorial](https://github.com/viccrubs/ChromeNJUGPACalculator/blob/master/TUTORIAL.md).
 
-## 解决Chrome重启后扩展不能重新开启的问题
+## 解决Chrome重启后/关闭后扩展不能重新开启的问题
 
-这是Chrome的锅。
+Chrome在某个版本后不允许不来自于官方商店的扩展运行。
 
->自 2016 年 11 月 21 日起，所有新发布的封装应用或托管应用都仅限 Chrome 操作系统用户使用（Windows、Mac 或 Linux 用户均无法使用这些应用）。现有的应用则会继续供所有主要平台上的用户使用，并会继续收到更新。
+>To protect you while you browse, Chrome only lets you use extensions that have been published on the Chrome Web Store.
+
+(Source: https://support.google.com/chrome/answer/2811969?p=ui_remove_non_cws_extensions&rd=1&hl=en)
 
 所以，未发布到商店的应用
 - 关闭了不能再开启；
 - 重启Chrome后，无法再打开。
 
-发布到商店需要交5刀，但是因为我办不了信用卡，而且之前用的虚拟信用卡也都不能用了，所以应该短时间内不会发布到商店，请谅解……
+发布到商店需要交5刀，但是因为我办不了信用卡，而且之前用的虚拟信用卡也都不能用了，所以应该短时间内不会发布到商店，请谅解。
 
-解决方法可以试试直接加载解压的扩展程序，操作如下：
+解决方法目前有三个，推荐第一个：
 
-1. clone仓库到本地；
-2. chrome://extensions中打开开发者模式；
-3. 点击加载已解压的扩展程序...，选择dist文件夹。
+- 直接加载解压的扩展程序。操作如下：
+    1. clone仓库到本地；
+    2. chrome://extensions中打开开发者模式；
+    3. 点击**加载已解压的扩展程序...**，选择仓库里的dist文件夹。
+- 安装Chrome的Canary版本或者Chromium。这些版本不如原版稳定，不推荐。
+- 安装其他基于Chromium的浏览器。推荐[Cent Browser](https://www.centbrowser.com/)，支持Google账号登录，自带实用的功能（比如鼠标手势什么的），而且据说也比Chrome省资源。
 
 ## Development
 
