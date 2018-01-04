@@ -1,10 +1,12 @@
 # NJU GPA Calculator Chrome Extension
 
+[<img src="https://viccrubs.visualstudio.com/_apis/public/build/definitions/24170433-9b66-4e70-a097-76719642fbd6/2/badge"/>](https://viccrubs.visualstudio.com/_apis/public/build/definitions/24170433-9b66-4e70-a097-76719642fbd6/2/badge)
+
 A simple Chrome Extension to calculate GPA at a click of mouse.
 
 ## Usage
 
-Please check out [official tutorial](https://github.com/viccrubs/ChromeNJUGPACalculator/blob/master/TUTORIAL.md).
+Please check out the [official tutorial](https://github.com/viccrubs/ChromeNJUGPACalculator/blob/master/TUTORIAL.md).
 
 ## 解决Chrome重启后/关闭后扩展不能重新开启的问题
 
@@ -31,11 +33,11 @@ Chrome在某个版本后不允许不来自于官方商店的扩展运行。
 
 ## Development
 
-This extension is based on
+This extension is developed with 
 - TypeScript
 - Webpack
 
-You should check out something about these before starting developing this project.
+Prior knowledge is required to participate in the development.
 
 ### Install dependencies
 
